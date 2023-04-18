@@ -32,7 +32,7 @@ const params = {
   secretOrKey: "jwtsecret238988945452",
 };
 
-const jwtExpirySecond = 7000000000000000;
+const jwtExpirySecond = 8000000000000000;
 
 let strategyALL = new JwtStrategy(params, function (token, done) {
   console.log("In JWTStrategy--All", token.id);
