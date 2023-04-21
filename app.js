@@ -76,12 +76,12 @@ app.post("/user", function (req, res) {
   );
   console.log(user);
   if (user) {
-    console.log(user.firstname);
+    console.log(user.firstName);
     let payload = {
       id: user.id,
       email: user.email,
       role: user.role,
-      name: user.firstname,
+      name: user.firstName,
     };
     let payload1 = { id: user.id };
     let token = jwt.sign(payload1, params.secretOrKey,{
@@ -92,6 +92,27 @@ app.post("/user", function (req, res) {
     res.send({ token: "bearer  " + token, ...payload });
   } else res.sendStatus(401);
 });
+
+app.post("/register", function (req, res) {
+  let body=req.body;
+ console.log(body);
+ let data={id:loginData.length+1,role:"user",...body}
+ loginData.push(data); 
+
+ let payload = {
+  id: data.id,
+  email: body.email,
+  role: data.role,
+  name: body.firstName,
+};
+let payload1 = { id: data.id };
+let token = jwt.sign(payload1, params.secretOrKey,{
+  algorithm: "HS256",
+  expiresIn: jwtExpirySecond,
+});
+console.log(token);
+res.send({ token: "bearer  " + token, ...payload });
+})
 
 app.get("/products", function (req, res) {
   res.send(mobilesMatch);
@@ -143,15 +164,7 @@ app.get("/productsData", function (req, res) {
     console.log(brand);
     arr1 = arr1.filter((n) => n.brand === brand);
   }
-  // if(brand!= undefined)
-  // {
-  //   brand= brand.split(',');
-  //   //console.log(language);
-  //   let arr2= arr1.filter(obj=>
-  //     brand.find(obj1=> obj1===obj.brand)
-  //  );
-  //  arr1= arr2;
-  // }
+
 
   if (rating) {
     arr1 = arr1.filter((n) => n.rating >= +rating);
@@ -214,14 +227,16 @@ app.get("/product/:productid", function (req, res) {
 
 app.get("/baseURl/products/:pincode/:prductID", function (req, res) {
   let pincode = +req.params.pincode;
-  if (pincode) {
-    let data = pinCodesData.find((n) => n.pincode === pincode);
-    console.log(data);
-    let prductID = req.params.prductID;
+  let data = pinCodesData.find((n) => n.pincode === pincode);
+  console.log(data);
+  if(data===undefined){
+    res.status(401).send("delivery not available");
+  }else{
+        let prductID = req.params.prductID;
     console.log(prductID);
     let data1 = data.mobileList.find((n) => n.id === prductID);
     console.log(data1);
-    res.send(data1);
+    res.send("delivery avialable");
   }
 });
 
@@ -308,7 +323,7 @@ app.put(
   }
 );
 
-app.delete("/wishlist/:id",  passport.authenticate("roleAdmin", { session: false }),
+app.delete("/wishlist/:id",  passport.authenticate("roleAll", { session: false }),
 function (req, res) {
   let id = req.params.id;
     let index=wishList.findIndex((n)=>n.id===id);

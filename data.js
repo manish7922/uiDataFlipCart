@@ -13080,8 +13080,8 @@ const mobiles = [
   
   
   const loginData=[
-      {id:1,email:"admin@test.com",password:"admin123",role:"admin" ,firstname:"admin",lastname:"user",gender:"Male" },
-      {id:2,email:"test@test.com",password:"test123",role:"user",firstname:"test",lastname:"user",gender:"Male"  },
+      {id:1,email:"admin@test.com",password:"admin123",role:"admin" ,firstName:"admin",lastname:"user",gender:"Male" },
+      {id:2,email:"test@test.com",password:"test123",role:"user",firstName:"test",lastname:"user",gender:"Male"  },
   ]
   
   const wishList=[
