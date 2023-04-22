@@ -84,7 +84,7 @@ app.post("/user", function (req, res) {
       name: user.firstName,
     };
     let payload1 = { id: user.id };
-    let token = jwt.sign(payload1, params.secretOrKey,{
+    let token = jwt.sign(payload1, params.secretOrKey, {
       algorithm: "HS256",
       expiresIn: jwtExpirySecond,
     });
@@ -94,25 +94,25 @@ app.post("/user", function (req, res) {
 });
 
 app.post("/register", function (req, res) {
-  let body=req.body;
- console.log(body);
- let data={id:loginData.length+1,role:"user",...body}
- loginData.push(data); 
+  let body = req.body;
+  console.log(body);
+  let data = { id: loginData.length + 1, role: "user", ...body };
+  loginData.push(data);
 
- let payload = {
-  id: data.id,
-  email: body.email,
-  role: data.role,
-  name: body.firstName,
-};
-let payload1 = { id: data.id };
-let token = jwt.sign(payload1, params.secretOrKey,{
-  algorithm: "HS256",
-  expiresIn: jwtExpirySecond,
+  let payload = {
+    id: data.id,
+    email: body.email,
+    role: data.role,
+    name: body.firstName,
+  };
+  let payload1 = { id: data.id };
+  let token = jwt.sign(payload1, params.secretOrKey, {
+    algorithm: "HS256",
+    expiresIn: jwtExpirySecond,
+  });
+  console.log(token);
+  res.send({ token: "bearer  " + token, ...payload });
 });
-console.log(token);
-res.send({ token: "bearer  " + token, ...payload });
-})
 
 app.get("/products", function (req, res) {
   res.send(mobilesMatch);
@@ -136,8 +136,7 @@ app.get("/deals", function (req, res) {
 });
 
 app.get("/productsData", function (req, res) {
-  let brand = req.params.brand;
-  let assured = req.query.assured;
+  let brand = req.query.brand;
   let ram = req.query.ram;
   let rating = req.query.rating;
   let price = req.query.price;
@@ -145,11 +144,6 @@ app.get("/productsData", function (req, res) {
   let arr1 = mobilesMatch;
 
   if (ram) {
-    // console.log(ram);
-    // let ram1=ram.substring(2,3);
-    // console.log(ram1);
-    // arr1 = arr1.filter(n => n.ram >= +ram1);
-
     if (ram === ">=6") {
       arr1 = arr1.filter((n) => n.ram >= 6);
     } else if (ram === "<=4") {
@@ -160,15 +154,37 @@ app.get("/productsData", function (req, res) {
       arr1 = arr1.filter((n) => n.ram <= 2);
     }
   }
-  if (brand) {
-    console.log(brand);
-    arr1 = arr1.filter((n) => n.brand === brand);
+
+  if (brand != undefined) {
+    brand = brand.split(",");
+    let arr2 = arr1.filter((obj) => brand.find((obj1) => obj1 === obj.brand));
+    arr1 = arr2;
   }
 
-
-  if (rating) {
-    arr1 = arr1.filter((n) => n.rating >= +rating);
+  if (rating != undefined) {
+    rating = rating.split(",");
+    console.log(rating);
+    let arr2 = arr1.filter((obj) => rating.find((obj1) => obj.rating >= +obj1));
+    console.log(arr2);
+    arr1 = arr2;
   }
+
+  // if (rating != undefined) {
+  //   // Split the selected ratings into an array
+  //   rating = rating.split(',');
+  //   let ratingDesc=rating.substring(2,3);
+  //   console.log(ratingDesc);
+  //   console.log(rating);
+  //   // Filter the products based on the selected ratings
+  //   arr1 = arr1.filter(obj =>
+  //     rating.some(rating => obj.rating >= parseFloat(rating))
+  //   );
+  //   console.log(arr1);
+  // }
+
+  // if (rating) {
+  //   arr1 = arr1.filter((n) => n.rating >= +rating);
+  // }
   if (price) {
     const priceRange = price.split("-");
     if (priceRange.length === 1) {
@@ -180,7 +196,7 @@ app.get("/productsData", function (req, res) {
     }
   }
 
-  console.log(arr1);
+  // console.log(arr1);
   res.send(arr1);
 });
 
@@ -229,10 +245,10 @@ app.get("/baseURl/products/:pincode/:prductID", function (req, res) {
   let pincode = +req.params.pincode;
   let data = pinCodesData.find((n) => n.pincode === pincode);
   console.log(data);
-  if(data===undefined){
+  if (data === undefined) {
     res.status(401).send("delivery not available");
-  }else{
-        let prductID = req.params.prductID;
+  } else {
+    let prductID = req.params.prductID;
     console.log(prductID);
     let data1 = data.mobileList.find((n) => n.id === prductID);
     console.log(data1);
@@ -323,16 +339,18 @@ app.put(
   }
 );
 
-app.delete("/wishlist/:id",  passport.authenticate("roleAll", { session: false }),
-function (req, res) {
-  let id = req.params.id;
-    let index=wishList.findIndex((n)=>n.id===id);
-  console.log(index);
-  if(index>=0){
-      let deleteData=wishList.splice(index,1);
+app.delete(
+  "/wishlist/:id",
+  passport.authenticate("roleAll", { session: false }),
+  function (req, res) {
+    let id = req.params.id;
+    let index = wishList.findIndex((n) => n.id === id);
+    console.log(index);
+    if (index >= 0) {
+      let deleteData = wishList.splice(index, 1);
       res.send(deleteData);
-  }else{
+    } else {
       res.status(404).send("data not found");
+    }
   }
-})
-
+);
