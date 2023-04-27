@@ -154,7 +154,6 @@ app.get("/productsData", function (req, res) {
       arr1 = arr1.filter((n) => n.ram <= 2);
     }
   }
-
   if (brand != undefined) {
     brand = brand.split(",");
     let arr2 = arr1.filter((obj) => brand.find((obj1) => obj1 === obj.brand));
