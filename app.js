@@ -95,16 +95,17 @@ app.post("/user", function (req, res) {
 
 app.post("/register", function (req, res) {
   let body = req.body;
-  console.log(body);
+  console.log(body.firstName);
   let data = { id: loginData.length + 1, role: "user", ...body };
   loginData.push(data);
-
+console.log(data);
   let payload = {
     id: data.id,
     email: body.email,
     role: data.role,
     name: body.firstName,
   };
+  console.log(payload);
   let payload1 = { id: data.id };
   let token = jwt.sign(payload1, params.secretOrKey, {
     algorithm: "HS256",
